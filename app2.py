@@ -175,60 +175,54 @@ def calculate_summary(df, mileage_df):
 # Streamlit app
 
 # Streamlit app
-st.title("Rim Mileage Tracker")
+st.markdown("""
+# 🚆 Rim Mileage Tracker
 
-excel_path = "RimData.xlsm"  
+""")
+
+excel_path = "RimData.xlsm"
 
 if os.path.exists(excel_path):
     xls = pd.ExcelFile(excel_path)
-
-    # Strip whitespace from sheet names for matching
     sheet_names_clean = [s.strip() for s in xls.sheet_names]
-    st.write("Sheets in the uploaded Excel file:", sheet_names_clean)
-
     sheet_name_map = {s.strip(): s for s in xls.sheet_names}
 
     if 'LoadWheelData' in sheet_names_clean and 'LatestMileage' in sheet_names_clean:
         df_load_wheel = pd.read_excel(xls, sheet_name=sheet_name_map['LoadWheelData'])
         df_latest_mileage = pd.read_excel(xls, sheet_name=sheet_name_map['LatestMileage'])
 
-        # Strip whitespace from column names
         df_load_wheel.columns = df_load_wheel.columns.str.strip()
         df_latest_mileage.columns = df_latest_mileage.columns.str.strip()
 
-        st.write("Columns in LoadWheelData:", df_load_wheel.columns.tolist())
-        st.write("Columns in LatestMileage:", df_latest_mileage.columns.tolist())
+        with st.expander("📄 View Sheet & Column Details"):
+            st.write("Sheets found:", sheet_names_clean)
+            st.write("LoadWheelData Columns:", df_load_wheel.columns.tolist())
+            st.write("LatestMileage Columns:", df_latest_mileage.columns.tolist())
 
-        serial_number = st.text_input("Enter Serial Number to search moves")
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            serial_number = st.text_input("🔍 Enter Serial Number")
+        with col2:
+            show_summary = st.button("📊 Show Summary")
 
         if serial_number:
             moves, rim_mileage = calculate_moves(df_load_wheel, df_latest_mileage, serial_number)
-
             if isinstance(moves, str):
                 st.error(moves)
             else:
-                st.subheader(f"Moves for Serial Number: {serial_number}")
-                moves_df = pd.DataFrame(
-                    moves,
-                    columns=["Action", "Train", "Car", "Position", "Mileage", "Remark"]
-                )
+                st.subheader(f"🧾 Moves for Serial Number: `{serial_number}`")
+                moves_df = pd.DataFrame(moves, columns=["Action", "Train", "Car", "Position", "Mileage", "Remark"])
+                st.dataframe(moves_df.drop(columns=["Remark"]))
+                st.metric(label="✅ Total Rim Mileage", value=f"{rim_mileage} km")
 
-                # Hide the 'Remark' column for display
-                moves_df_display = moves_df.drop(columns=["Remark"])
-                st.dataframe(moves_df_display)
-                st.markdown(
-                    f"<div style='font-size:32px; font-weight:bold; color:#2E86AB;'>Total Rim Mileage: {rim_mileage}</div>",
-                    unsafe_allow_html=True
-                )
-
-        if st.button("Show Summary for All Serial Numbers"):
+        if show_summary:
             summary_df = calculate_summary(df_load_wheel, df_latest_mileage)
             if summary_df.empty:
-                st.warning("No summary data to display.")
+                st.warning("⚠️ No summary data to display.")
             else:
-                st.subheader("Summary Table")
+                st.subheader("📈 Summary Table")
                 st.dataframe(summary_df)
     else:
-        st.error("Required sheets 'LoadWheelData' or 'LatestMileage' not found in the Excel file.")
+        st.error("❌ Required sheets 'LoadWheelData' or 'LatestMileage' not found in the Excel file.")
 else:
-    st.error(f"Excel file not found at {excel_path}")
+    st.error(f"❌ Excel file not found at `{excel_path}`.")
