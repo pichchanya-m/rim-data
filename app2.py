@@ -178,6 +178,7 @@ st.markdown("""
 # 🚆 Rim Mileage 
 
 """)
+
 excel_path = "RimData.xlsm"
 
 if os.path.exists(excel_path):
@@ -207,21 +208,22 @@ if os.path.exists(excel_path):
             moves, rim_mileage = calculate_moves(df_load_wheel, df_latest_mileage, serial_number)
             if isinstance(moves, str):
                 st.markdown(
-                    f"""
-                    <div style="
-                        background-color:#fdecea;
-                        border-left:5px solid #e74c3c;
-                        padding:1rem;
-                        margin-top:1rem;
-                        font-size:18px;
-                        font-weight:bold;
-                        color:#c0392b;
-                        border-radius:8px;">
-                        ❌ {moves}
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+    f"""
+    <div style="
+        background-color:#fdecea;
+        border-left:5px solid #e74c3c;
+        padding:1rem;
+        margin-top:1rem;
+        font-size:18px;
+        font-weight:bold;
+        color:#c0392b;
+        border-radius:8px;">
+        ❌ {moves}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
             else:
                 st.subheader(f"🧾 Moves for Serial Number: `{serial_number}`")
                 moves_df = pd.DataFrame(moves, columns=["Action", "Train", "Car", "Position", "Mileage", "Remark"])
@@ -234,14 +236,11 @@ if os.path.exists(excel_path):
                 st.warning("⚠️ No summary data to display.")
             else:
                 st.subheader("📈 Summary Table")
-
-                # Apply center alignment styling
-                summary_df_styled = summary_df.style.set_properties(**{'text-align': 'center'})
-                
-                # Display the styled dataframe
-                st.dataframe(summary_df_styled, height=600, width=1200)
+              
+                st.dataframe(summary_df, height=600, width=1200)
 
     else:
         st.error("❌ Required sheets 'LoadWheelData' or 'LatestMileage' not found in the Excel file.")
 else:
     st.error(f"❌ Excel file not found at `{excel_path}`.")
+
