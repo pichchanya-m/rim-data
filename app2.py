@@ -36,12 +36,12 @@ def calculate_moves(df, mileage_df, serial_number):
             else:
                 last_installed_mileage = train_mileage
 
+            # Rim mileage doesn't increase on install, just carry over the current value
             move_list.append([
                 f"Installed {install_counter}",
                 train,
-                car,
-                position,
                 train_mileage,
+                rim_mileage,
                 "❌ Invalid install sequence" if is_invalid else f"Installed {install_counter}"
             ])
             prev_action = 'installed'
@@ -57,9 +57,8 @@ def calculate_moves(df, mileage_df, serial_number):
             move_list.append([
                 f"Removed {remove_counter}",
                 train,
-                car,
-                position,
                 train_mileage,
+                rim_mileage,
                 "❌ Invalid remove sequence" if is_invalid else f"Removed {remove_counter}"
             ])
             prev_action = 'removed'
@@ -68,19 +67,14 @@ def calculate_moves(df, mileage_df, serial_number):
             move_list.append([
                 "❓ Unknown Action",
                 train,
-                car,
-                position,
                 train_mileage,
+                rim_mileage,
                 f"Unknown action '{action}'"
             ])
             sequence_invalid = True
             prev_action = None
 
         first_event = False
-
-    # Remove or comment out this final consistency check if you want
-    # if install_counter < remove_counter or install_counter > remove_counter + 1:
-    #     sequence_invalid = True
 
     last_train = str(serial_df.iloc[-1]['Train']).strip()
     mileage_df['Train'] = mileage_df['Train'].astype(str).str.strip()
@@ -97,9 +91,8 @@ def calculate_moves(df, mileage_df, serial_number):
         move_list.append([
             "Latest",
             last_train,
-            car,
-            position,
             latest_mileage,
+            rim_mileage,
             "Latest Mileage"
         ])
 
@@ -107,6 +100,7 @@ def calculate_moves(df, mileage_df, serial_number):
         return move_list, f"❌ Error: Invalid sequence for Serial Number {serial_number}"
 
     return move_list, rim_mileage
+
 
 
 
