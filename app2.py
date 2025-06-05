@@ -208,7 +208,23 @@ if os.path.exists(excel_path):
         if serial_number:
             moves, rim_mileage = calculate_moves(df_load_wheel, df_latest_mileage, serial_number)
             if isinstance(moves, str):
-                st.error(moves)
+                st.markdown(
+    f"""
+    <div style="
+        background-color:#fdecea;
+        border-left:5px solid #e74c3c;
+        padding:1rem;
+        margin-top:1rem;
+        font-size:18px;
+        font-weight:bold;
+        color:#c0392b;
+        border-radius:8px;">
+        ❌ {moves}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
             else:
                 st.subheader(f"🧾 Moves for Serial Number: `{serial_number}`")
                 moves_df = pd.DataFrame(moves, columns=["Action", "Train", "Car", "Position", "Mileage", "Remark"])
