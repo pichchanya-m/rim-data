@@ -175,7 +175,7 @@ def calculate_summary(df, mileage_df):
 
 # Streamlit app
 st.markdown("""
-# 🚆 Rim Mileage Tracker
+# 🚆 Rim Mileage 
 
 """)
 
@@ -203,7 +203,7 @@ if os.path.exists(excel_path):
             serial_number = st.text_input("🔍 Enter Serial Number")
         with col2:
             show_summary = st.button("📊 Show Summary")
-
+            
         if serial_number:
             moves, rim_mileage = calculate_moves(df_load_wheel, df_latest_mileage, serial_number)
             if isinstance(moves, str):
@@ -237,6 +237,8 @@ if os.path.exists(excel_path):
             else:
                 st.subheader("📈 Summary Table")
                 st.dataframe(summary_df)
+                st.dataframe(summary_df, height=600, width=1000)
+
     else:
         st.error("❌ Required sheets 'LoadWheelData' or 'LatestMileage' not found in the Excel file.")
 else:
