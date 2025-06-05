@@ -237,7 +237,7 @@ if os.path.exists(excel_path):
             else:
                 st.subheader("📈 Summary Table")
               
-                st.dataframe(summary_df, height=700, width=1500)
+                st.dataframe(summary_df, height=600, width=1500)
 
     else:
         st.error("❌ Required sheets 'LoadWheelData' or 'LatestMileage' not found in the Excel file.")
