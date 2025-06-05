@@ -40,6 +40,8 @@ def calculate_moves(df, mileage_df, serial_number):
             move_list.append([
                 f"Installed {install_counter}",
                 train,
+                car,
+                position,
                 train_mileage,
                 rim_mileage,
                 "❌ Invalid install sequence" if is_invalid else f"Installed {install_counter}"
@@ -57,6 +59,8 @@ def calculate_moves(df, mileage_df, serial_number):
             move_list.append([
                 f"Removed {remove_counter}",
                 train,
+                car,
+                position,
                 train_mileage,
                 rim_mileage,
                 "❌ Invalid remove sequence" if is_invalid else f"Removed {remove_counter}"
@@ -67,6 +71,8 @@ def calculate_moves(df, mileage_df, serial_number):
             move_list.append([
                 "❓ Unknown Action",
                 train,
+                car,
+                position,
                 train_mileage,
                 rim_mileage,
                 f"Unknown action '{action}'"
@@ -91,6 +97,8 @@ def calculate_moves(df, mileage_df, serial_number):
         move_list.append([
             "Latest",
             last_train,
+            car,
+            position,
             latest_mileage,
             rim_mileage,
             "Latest Mileage"
@@ -100,9 +108,6 @@ def calculate_moves(df, mileage_df, serial_number):
         return move_list, f"❌ Error: Invalid sequence for Serial Number {serial_number}"
 
     return move_list, rim_mileage
-
-
-
 
 
 def calculate_summary(df, mileage_df):
@@ -166,12 +171,7 @@ def calculate_summary(df, mileage_df):
 
 
 # Streamlit app
-
-# Streamlit app
-st.markdown("""
-# 🚆 Rim Mileage 
-
-""")
+st.markdown("# 🚆 Rim Mileage")
 
 excel_path = "RimData.xlsm"
 
@@ -197,30 +197,29 @@ if os.path.exists(excel_path):
             serial_number = st.text_input("🔍 Enter Serial Number")
         with col2:
             show_summary = st.button("📊 Show Summary")
-            
+
         if serial_number:
             moves, rim_mileage = calculate_moves(df_load_wheel, df_latest_mileage, serial_number)
             if isinstance(moves, str):
                 st.markdown(
-    f"""
-    <div style="
-        background-color:#fdecea;
-        border-left:5px solid #e74c3c;
-        padding:1rem;
-        margin-top:1rem;
-        font-size:18px;
-        font-weight:bold;
-        color:#c0392b;
-        border-radius:8px;">
-        ❌ {moves}
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
+                    f"""
+                    <div style="
+                        background-color:#fdecea;
+                        border-left:5px solid #e74c3c;
+                        padding:1rem;
+                        margin-top:1rem;
+                        font-size:18px;
+                        font-weight:bold;
+                        color:#c0392b;
+                        border-radius:8px;">
+                        ❌ {moves}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
             else:
                 st.subheader(f"🧾 Moves for Serial Number: `{serial_number}`")
-                moves_df = pd.DataFrame(moves, columns=["Action", "Train", "Car", "Position", "Mileage", "Remark"])
+                moves_df = pd.DataFrame(moves, columns=["Action", "Train", "Car", "Position", "Mileage", "Rim Mileage", "Remark"])
                 st.dataframe(moves_df.drop(columns=["Remark"]))
                 st.metric(label="✅ Total Rim Mileage", value=f"{rim_mileage} km")
 
@@ -230,11 +229,9 @@ if os.path.exists(excel_path):
                 st.warning("⚠️ No summary data to display.")
             else:
                 st.subheader("📈 Summary Table")
-              
                 st.dataframe(summary_df, height=600, width=1200)
 
     else:
         st.error("❌ Required sheets 'LoadWheelData' or 'LatestMileage' not found in the Excel file.")
 else:
     st.error(f"❌ Excel file not found at `{excel_path}`.")
-
