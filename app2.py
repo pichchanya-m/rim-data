@@ -170,6 +170,7 @@ def calculate_summary(df, mileage_df):
     ).reset_index(drop=True)
 
 
+
 # Streamlit app
 st.markdown("# 🚆 Rim Mileage")
 
