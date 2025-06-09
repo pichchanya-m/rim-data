@@ -220,7 +220,10 @@ if os.path.exists(excel_path):
                 )
             else:
                 st.subheader(f"🧾 Moves for Serial Number: `{serial_number}`")
-                moves_df = pd.DataFrame(moves, columns=["Action", "Train", "Car", "Position", "Mileage", "Rim Mileage", "Remark"])
+                moves_df = pd.DataFrame(
+    moves,
+    columns=["Action", "Train", "Car", "Position", "Mileage", "Rim Mileage", "Remark"]
+)
                 st.dataframe(moves_df.drop(columns=["Remark"]))
                 st.metric(label="✅ Total Rim Mileage", value=f"{rim_mileage} km")
 
