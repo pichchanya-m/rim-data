@@ -204,3 +204,7 @@ env.bak/
 venv.bak/
 
 
+# Excel files - ignored to protect your data
+*.xlsm
+*.xlsx
+
